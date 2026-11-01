@@ -1,0 +1,97 @@
+/* CulDeChat website: Pine & Sky colors, Nunito type (see docs/product/branding.md). */
+:root {
+  --pine: #2F4A3B;
+  --wheat: #EBDDBA;
+  --marigold: #E0A43A;
+  --clay: #C8754A;
+  --sky: #9DBCCB;
+  --paper: #F4EFE4;
+  --card: #FFFCF6;
+  --bark: #2F2A20;
+  --muted: #5C5446;
+  --line: #D6CCBA;
+  --link: #2F4A3B;
+  --tagline: #3E5E4B;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1E1B15;
+    --card: #2A261E;
+    --bark: #EFE8DA;
+    --muted: #C9BFAE;
+    --line: #463F33;
+    --link: #E0A43A;
+    --tagline: #B9CFC0;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--bark);
+  font: 17px/1.6 "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+a { color: var(--link); font-weight: 700; }
+a:hover { color: var(--clay); }
+
+.top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 8px 20px; padding: 14px 20px; background: var(--pine);
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand img { border-radius: 9px; }
+.brand span { color: var(--wheat); font-size: 1.35rem; font-weight: 800; letter-spacing: .2px; }
+.brand b { color: var(--marigold); font-weight: 800; }
+.top nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.top nav a { color: var(--wheat); text-decoration: none; font-weight: 600; padding: 4px 0; }
+.top nav a:hover, .top nav a[aria-current="page"] { color: var(--marigold); }
+
+.doc {
+  max-width: 820px; margin: 28px auto; padding: 8px 28px 24px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+}
+.doc h1 { font-size: 2rem; line-height: 1.2; margin: 20px 0 12px; }
+.doc h1 + p, .doc h1 + p + p, .doc h1 + p + p + p { margin: 2px 0; }
+.doc h2 { margin-top: 32px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 1.35rem; }
+.doc h3 { margin-top: 24px; font-size: 1.1rem; }
+.doc hr { display: none; }
+.doc blockquote {
+  margin: 16px 0; padding: 10px 16px; border-left: 4px solid var(--clay);
+  background: color-mix(in srgb, var(--clay) 10%, transparent); border-radius: 0 8px 8px 0;
+}
+.doc blockquote p { margin: 4px 0; }
+.table { overflow-x: auto; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: .95rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+th { background: color-mix(in srgb, var(--pine) 12%, transparent); }
+li { margin: 4px 0; }
+
+footer { text-align: center; color: var(--muted); font-size: .9rem; padding: 8px 16px 32px; }
+footer p { margin: 4px 0; }
+
+/* Home page */
+.hero { text-align: center; padding: 56px 20px 40px; background: var(--pine); color: var(--wheat); }
+.hero img { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.hero h1 { margin: 18px 0 6px; font-size: 2.6rem; font-weight: 800; }
+.hero h1 b { color: var(--marigold); }
+.hero p.tag { margin: 0 0 18px; font-size: 1.25rem; color: var(--wheat); opacity: .9; }
+.hero .soon {
+  display: inline-block; padding: 8px 16px; border-radius: 999px;
+  background: var(--marigold); color: #2F2A20; font-weight: 800;
+}
+.features {
+  max-width: 980px; margin: 32px auto; padding: 0 20px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+}
+.feature { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+.feature h2 { margin: 0 0 6px; font-size: 1.15rem; }
+.feature p { margin: 0; color: var(--muted); }
+.links { text-align: center; margin: 8px 0 24px; }
+
+@media (max-width: 600px) {
+  body { font-size: 16px; }
+  .doc { margin: 0; border-radius: 0; border-left: 0; border-right: 0; padding: 4px 18px 20px; }
+  .doc h1 { font-size: 1.6rem; }
+  .hero h1 { font-size: 2.1rem; }
+}
