@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get CulDeChat</title>
+<meta name="description" content="Get CulDeChat for iPhone or Android. The free neighborhood beta opens Sunday, December 13.">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .get { max-width: 460px; margin: 0 auto; padding: 32px 20px 24px; text-align: center; }
+  .get .kicker { margin: 0; font-size: .85rem; font-weight: 800; letter-spacing: .08em; color: var(--clay); }
+  .get .date { margin: 4px 0 0; font-size: 1.9rem; font-weight: 800; line-height: 1.2; }
+  .get .lead { margin: 14px 0 0; }
+  .stores { display: flex; flex-direction: column; gap: 10px; margin: 24px auto 0; max-width: 280px; }
+  .store {
+    display: flex; align-items: center; justify-content: center; height: 52px;
+    border-radius: 14px; font-weight: 800; text-decoration: none;
+    background: var(--pine); color: var(--wheat);
+  }
+  .store:hover { color: #fff; }
+  .store.off { background: var(--line); color: var(--muted); pointer-events: none; }
+  .get .small { margin: 22px 0 0; font-size: .95rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<section class="hero">
+  <img src="/icon.svg" alt="CulDeChat app icon">
+  <h1>CulDe<b>Chat</b></h1>
+  <p class="tag">Every street deserves a cul-de-sac.</p>
+</section>
+
+<main class="get">
+  <p class="kicker" id="kicker">FREE BETA OPENS</p>
+  <p class="date" id="date">Sunday, December 13</p>
+  <p class="lead" id="lead">Thanks for scanning! Come back to this page on the 13th and it will take you straight to the right store for your phone.</p>
+  <div class="stores">
+    <a class="store off" id="ios" href="#">App Store · Dec 13</a>
+    <a class="store off" id="android" href="#">Google Play · Dec 13</a>
+  </div>
+  <p class="small">Your address is never shown to anyone. <a href="/">How it works</a></p>
+</main>
+
+<p class="links"><a href="/support.html">Support</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/guidelines.html">Community Guidelines</a></p>
+<footer>
+  <p>© 2026 Direct Innovations LLC · <a href="mailto:support@culdechat.app">support@culdechat.app</a></p>
+</footer>
+
+<script>
+  // The flyer's QR code points here and never changes. When the beta opens,
+  // paste the two store links below; the page then sends each phone to its
+  // store and shows both buttons for everyone else (computers, tablets).
+  // Nothing is collected or stored.
+  var IOS_LINK = '';      // TestFlight public link (later the App Store link)
+  var ANDROID_LINK = '';  // Google Play link
+
+  (function () {
+    if (!IOS_LINK && !ANDROID_LINK) return;
+    document.getElementById('kicker').textContent = 'FREE BETA';
+    document.getElementById('date').textContent = 'Get CulDeChat';
+    document.getElementById('lead').textContent =
+      'Choose your phone below. It takes about a minute to set up.';
+    var ios = document.getElementById('ios');
+    var android = document.getElementById('android');
+    if (IOS_LINK) { ios.href = IOS_LINK; ios.textContent = 'Get it on iPhone'; ios.className = 'store'; }
+    if (ANDROID_LINK) { android.href = ANDROID_LINK; android.textContent = 'Get it on Android'; android.className = 'store'; }
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var isAndroid = /Android/.test(ua);
+    if (isIOS && IOS_LINK) window.location.replace(IOS_LINK);
+    else if (isAndroid && ANDROID_LINK) window.location.replace(ANDROID_LINK);
+  })();
+</script>
+</body>
+</html>
