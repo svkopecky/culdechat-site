@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>You're invited · CulDeChat</title>
+<meta name="description" content="An invitation sent with CulDeChat. Answer Going, Maybe or Can't go.">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .inv { max-width: 480px; margin: 0 auto; padding: 24px 16px 8px; }
+  .logo { display: block; width: 56px; height: 56px; margin: 0 auto; border-radius: 14px; }
+  .from { margin: 14px 0 0; text-align: center; color: var(--muted); font-weight: 600; }
+  .title { margin: 2px 0 0; text-align: center; font-size: 1.7rem; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+  .when { margin: 6px 0 0; text-align: center; font-weight: 700; }
+  .where { margin: 4px 0 0; text-align: center; color: var(--muted); overflow-wrap: anywhere; }
+  .where a { font-weight: 700; }
+  .card { margin: 18px 0 0; padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+  .card h2 { margin: 0 0 10px; font-size: 1.1rem; }
+  .answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .answers button {
+    height: 46px; border-radius: 23px; border: 1.5px solid var(--line); background: transparent;
+    color: var(--bark); font: inherit; font-weight: 800; cursor: pointer;
+  }
+  .answers button[aria-pressed="true"] { background: var(--pine); border-color: var(--pine); color: var(--wheat); }
+  label { display: block; margin: 12px 0 4px; font-weight: 700; font-size: .95rem; }
+  input, select {
+    width: 100%; box-sizing: border-box; height: 46px; padding: 0 12px; border-radius: 12px;
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--bark); font: inherit;
+  }
+  .hint { margin: 4px 0 0; font-size: .85rem; color: var(--muted); }
+  .send {
+    width: 100%; height: 50px; margin-top: 16px; border: 0; border-radius: 25px; cursor: pointer;
+    background: var(--pine); color: var(--wheat); font: inherit; font-weight: 800; font-size: 1.05rem;
+  }
+  .send[disabled] { opacity: .6; cursor: default; }
+  .msg { margin: 10px 0 0; font-weight: 700; }
+  .msg.err { color: var(--clay); }
+  .coming { margin: 16px 0 0; text-align: center; color: var(--muted); overflow-wrap: anywhere; }
+  .banner { margin: 18px 0 0; padding: 14px; border-radius: 14px; text-align: center; font-weight: 800;
+            background: var(--wheat); color: var(--bark); }
+  .app { margin: 22px 0 0; text-align: center; font-size: .95rem; color: var(--muted); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main class="inv">
+  <img class="logo" src="/icon.svg" alt="CulDeChat">
+  <p class="from" id="from">Loading the invite…</p>
+  <h1 class="title" id="title"></h1>
+  <p class="when" id="when"></p>
+  <p class="where" id="where"></p>
+
+  <p class="banner hidden" id="banner"></p>
+
+  <section class="card hidden" id="form">
+    <h2>Will you be there?</h2>
+    <div class="answers" role="group" aria-label="Your answer">
+      <button type="button" data-a="going" aria-pressed="false">✓ Going</button>
+      <button type="button" data-a="maybe" aria-pressed="false">Maybe</button>
+      <button type="button" data-a="no" aria-pressed="false">Can't go</button>
+    </div>
+    <label for="name">Your name</label>
+    <input id="name" maxlength="40" autocomplete="name" placeholder="So the host knows who's coming">
+    <div id="extraBox" class="hidden">
+      <label for="extra">Bringing anyone?</label>
+      <select id="extra">
+        <option value="0">Just me</option>
+        <option value="1">+1</option><option value="2">+2</option><option value="3">+3</option>
+        <option value="4">+4</option><option value="5">+5</option><option value="6">+6</option>
+        <option value="7">+7</option><option value="8">+8</option><option value="9">+9</option>
+      </select>
+    </div>
+    <label for="email">Email for a reminder (optional)</label>
+    <input id="email" type="email" maxlength="120" autocomplete="email" placeholder="you@example.com">
+    <p class="hint">Only used to remind you and tell you if the time or place changes. Leave it blank to stop emails.</p>
+    <button class="send" id="send" type="button">Send my answer</button>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </section>
+
+  <p class="coming hidden" id="coming"></p>
+
+  <p class="app">Have CulDeChat? <a id="openApp" href="#">Open the invite in the app</a><br>
+    Want reminders and updates? <a href="/get.html">Get the free CulDeChat app</a></p>
+  <p class="app">The host and guests see your name and answer. The address is only shown after you answer, so a forwarded link doesn't share it.</p>
+</main>
+
+<p class="links"><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/support.html">Support</a></p>
+<footer>
+  <p>© 2026 Direct Innovations LLC · <a href="mailto:support@culdechat.app">support@culdechat.app</a></p>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  // Event invites (plan 1.30). The link looks like culdechat.app/e/#K7Q4M2PX.
+  // The code is the key to the invite. Your answer gets a private token,
+  // kept in this browser (and in the link inside your emails), so you can
+  // change it later. The token is removed from the address bar, so copying
+  // or forwarding the page link never shares your answer or the address.
+  var API = 'https://lrzbxkskbpqajianurir.supabase.co/rest/v1/rpc/';
+  var KEY = 'sb_publishable_wZlm-qctT77iDOoeQ9ABEQ_ec3RqslJ';
+  var $ = function (id) { return document.getElementById(id); };
+
+  var parts = (location.hash || '').replace(/^#/, '').split('/');
+  var code = (parts[0] || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var store = 'cdc-invite-' + code;
+  var token = null;
+  try { token = localStorage.getItem(store); } catch (e) {}
+  if (parts[1] && /^[a-f0-9]{40,80}$/.test(parts[1])) {
+    token = parts[1];
+    try { localStorage.setItem(store, token); } catch (e) {}
+  }
+  if (parts.length > 1 && history.replaceState) history.replaceState(null, '', location.pathname + '#' + code);
+  $('openApp').href = 'culdechat://e/' + code;
+
+  var answer = null;
+
+  function call(name, args) {
+    return fetch(API + name, {
+      method: 'POST',
+      headers: { 'apikey': KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(args)
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error((j && j.message) || 'Something went wrong. Try again.');
+        return j;
+      });
+    });
+  }
+
+  function when(at, end) {
+    var a = new Date(at), e = end ? new Date(end) : null;
+    var day = { weekday: 'short', month: 'short', day: 'numeric' };
+    var time = { hour: 'numeric', minute: '2-digit' };
+    var s = a.toLocaleDateString(undefined, day) + ' · ' + a.toLocaleTimeString(undefined, time);
+    if (e) {
+      s += (e.toDateString() === a.toDateString())
+        ? ' – ' + e.toLocaleTimeString(undefined, time)
+        : ' – ' + e.toLocaleDateString(undefined, day) + ' ' + e.toLocaleTimeString(undefined, time);
+    }
+    return '📅 ' + s;
+  }
+
+  function pick(a) {
+    answer = a;
+    var btns = document.querySelectorAll('.answers button');
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', String(btns[i].getAttribute('data-a') === a));
+    $('extraBox').classList.toggle('hidden', a !== 'going' && a !== 'maybe');
+  }
+
+  function show(v) {
+    document.title = v.title + ' · CulDeChat';
+    $('from').textContent = (v.host_name || 'Someone') + ' invited you to';
+    $('title').textContent = v.title;
+    $('when').textContent = when(v.at, v.end);
+    var where = $('where');
+    where.textContent = '';
+    if (v.address) {
+      where.appendChild(document.createTextNode('📍 ' + (v.place ? v.place + ', ' : '') + v.address + ' · '));
+      var a = document.createElement('a');
+      var q = (v.lat != null && v.lng != null) ? v.lat + ',' + v.lng : v.address;
+      a.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+      a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = 'Open in Maps';
+      where.appendChild(a);
+    } else {
+      where.textContent = '📍 ' + (v.place ? v.place + ' · ' : '') + 'Address shows after you answer';
+    }
+
+    var banner = $('banner');
+    var closed = v.canceled || v.over;
+    banner.classList.toggle('hidden', !closed);
+    if (v.canceled) banner.textContent = 'The host canceled this event.';
+    else if (v.over) banner.textContent = 'This event is over.';
+    $('form').classList.toggle('hidden', closed);
+
+    if (v.my_answer) {
+      pick(v.my_answer);
+      $('send').textContent = 'Update my answer';
+    }
+    if (v.my_name && !$('name').value) $('name').value = v.my_name;
+    if (v.my_email != null && !$('email').value) $('email').value = v.my_email;
+    $('extra').value = String(v.my_extra || 0);
+
+    var names = (v.coming || []).filter(function (c) { return c.answer === 'going'; })
+      .map(function (c) { return c.name + (c.extra ? ' +' + c.extra : ''); });
+    var maybes = (v.coming || []).filter(function (c) { return c.answer === 'maybe'; }).length;
+    var coming = $('coming');
+    coming.classList.toggle('hidden', !names.length && !maybes);
+    coming.textContent = (names.length ? 'Coming: ' + names.join(', ') : '') +
+      (maybes ? (names.length ? ' · ' : '') + maybes + ' maybe' : '');
+  }
+
+  function fail(msg) {
+    $('from').textContent = msg;
+    $('form').classList.add('hidden');
+  }
+
+  var btns = document.querySelectorAll('.answers button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function () { pick(this.getAttribute('data-a')); });
+  }
+
+  $('send').addEventListener('click', function () {
+    var msg = $('msg');
+    msg.className = 'msg';
+    if (!answer) { msg.className = 'msg err'; msg.textContent = 'Pick Going, Maybe or Can\'t go.'; return; }
+    if (!$('name').value.trim()) { msg.className = 'msg err'; msg.textContent = 'Add your name so the host knows who\'s coming.'; $('name').focus(); return; }
+    var btn = this;
+    btn.disabled = true;
+    msg.textContent = 'Sending…';
+    call('web_answer_invite', {
+      p_code: code, p_token: token, p_answer: answer, p_name: $('name').value,
+      p_email: $('email').value, p_extra: parseInt($('extra').value, 10) || 0
+    }).then(function (v) {
+      if (v.token) {
+        token = v.token;
+        try { localStorage.setItem(store, token); } catch (e) {}
+      }
+      show(v);
+      msg.textContent = answer === 'going' ? 'Thanks! The host knows you\'re coming.'
+        : answer === 'maybe' ? 'Thanks! The host knows you might come.'
+        : 'Thanks for letting the host know.';
+    }).catch(function (e) {
+      msg.className = 'msg err';
+      msg.textContent = e.message;
+    }).then(function () { btn.disabled = false; });
+  });
+
+  if (!code) { fail('This invite link is missing its code. Ask the host to send it again.'); return; }
+  call('web_invite', { p_code: code, p_token: token })
+    .then(show)
+    .catch(function (e) { fail(e.message); });
+})();
+</script>
+</body>
+</html>
