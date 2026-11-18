@@ -117,7 +117,8 @@
     try { localStorage.setItem(store, token); } catch (e) {}
   }
   if (parts.length > 1 && history.replaceState) history.replaceState(null, '', location.pathname + '#' + code);
-  $('openApp').href = 'culdechat://e/' + code;
+  function appLink() { $('openApp').href = 'culdechat://e/' + code + (token ? '/' + token : ''); }
+  appLink();
 
   var answer = null;
 
@@ -156,7 +157,9 @@
 
   function show(v) {
     document.title = v.title + ' · CulDeChat';
-    $('from').textContent = (v.host_name || 'Someone') + ' invited you to';
+    // A personal link: "Hi Grandma Jo 👋" with the name already filled in.
+    $('from').textContent = (v.my_name && !v.my_answer ? 'Hi ' + v.my_name + ' 👋 · ' : '') +
+      (v.host_name || 'Someone') + ' invited you to';
     $('title').textContent = v.title;
     $('when').textContent = when(v.at, v.end);
     var where = $('where');
@@ -222,6 +225,7 @@
       if (v.token) {
         token = v.token;
         try { localStorage.setItem(store, token); } catch (e) {}
+        appLink();
       }
       show(v);
       msg.textContent = answer === 'going' ? 'Thanks! The host knows you\'re coming.'
