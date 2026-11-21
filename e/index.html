@@ -20,6 +20,8 @@
   .when { margin: 6px 0 0; text-align: center; font-weight: 700; }
   .where { margin: 4px 0 0; text-align: center; color: var(--muted); overflow-wrap: anywhere; }
   .where a { font-weight: 700; }
+  .details { margin: 12px 0 0; text-align: center; white-space: pre-line; overflow-wrap: anywhere; }
+  .whole { margin: 8px 0 0; font-size: .85rem; color: var(--muted); }
   .card { margin: 18px 0 0; padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
   .card h2 { margin: 0 0 10px; font-size: 1.1rem; }
   .answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -55,6 +57,7 @@
   <h1 class="title" id="title"></h1>
   <p class="when" id="when"></p>
   <p class="where" id="where"></p>
+  <p class="details hidden" id="details"></p>
 
   <p class="banner hidden" id="banner"></p>
 
@@ -81,6 +84,7 @@
     <p class="hint">Only used to remind you and tell you if the time or place changes. Leave it blank to stop emails.</p>
     <button class="send" id="send" type="button">Send my answer</button>
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <p class="whole hidden" id="whole">One answer for the whole event, all days.</p>
   </section>
 
   <p class="coming hidden" id="coming"></p>
@@ -135,10 +139,18 @@
     });
   }
 
-  function when(at, end) {
+  function when(at, end, lastDay) {
     var a = new Date(at), e = end ? new Date(end) : null;
     var day = { weekday: 'short', month: 'short', day: 'numeric' };
     var time = { hour: 'numeric', minute: '2-digit' };
+    // Several days, same hours each day (Nov 21): "Thu, Dec 24 – Sat, Dec 26 · 4:00 PM – 9:00 PM each day".
+    if (lastDay) {
+      var p = String(lastDay).split('-');
+      var l = new Date(+p[0], +p[1] - 1, +p[2]);
+      return '📅 ' + a.toLocaleDateString(undefined, day) + ' – ' + l.toLocaleDateString(undefined, day) +
+        ' · ' + a.toLocaleTimeString(undefined, time) +
+        (e ? ' – ' + e.toLocaleTimeString(undefined, time) : '') + ' each day';
+    }
     var s = a.toLocaleDateString(undefined, day) + ' · ' + a.toLocaleTimeString(undefined, time);
     if (e) {
       s += (e.toDateString() === a.toDateString())
@@ -161,7 +173,10 @@
     $('from').textContent = (v.my_name && !v.my_answer ? 'Hi ' + v.my_name + ' 👋 · ' : '') +
       (v.host_name || 'Someone') + ' invited you to';
     $('title').textContent = v.title;
-    $('when').textContent = when(v.at, v.end);
+    $('when').textContent = when(v.at, v.end, v.last_day);
+    $('details').textContent = v.details || '';
+    $('details').classList.toggle('hidden', !v.details);
+    $('whole').classList.toggle('hidden', !v.last_day);
     var where = $('where');
     where.textContent = '';
     if (v.address) {
