@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Lost pet · CulDeChat</title>
+<meta name="description" content="A lost pet poster made with CulDeChat. Seen this pet? Tell the family where.">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .lost { max-width: 480px; margin: 0 auto; padding: 20px 16px 8px; }
+  .brand { margin: 0; color: var(--muted); font-weight: 700; font-size: .95rem; }
+  .title { margin: 6px 0 0; font-size: 1.8rem; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+  .photo { display: block; width: 100%; max-height: 360px; object-fit: cover; margin: 12px 0 0; border-radius: 14px; }
+  .details { margin: 12px 0 0; overflow-wrap: anywhere; }
+  .seen { margin: 6px 0 0; color: var(--clay); font-weight: 700; }
+  .extra { margin: 8px 0 0; font-weight: 800; }
+  .found { margin: 16px 0 0; padding: 16px; border-radius: 14px; text-align: center; font-weight: 800; font-size: 1.15rem;
+           background: #E3F0E7; color: #1F5A37; }
+  .card { margin: 16px 0 0; padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+  .card h2 { margin: 0 0 6px; font-size: 1.15rem; }
+  .big, .send {
+    width: 100%; height: 50px; border: 0; border-radius: 25px; cursor: pointer;
+    background: var(--pine); color: var(--wheat); font: inherit; font-weight: 800; font-size: 1.05rem;
+  }
+  .send[disabled] { opacity: .6; cursor: default; }
+  .loc { width: 100%; height: 46px; margin-top: 6px; border-radius: 23px; border: 1.5px solid var(--line);
+         background: transparent; color: var(--bark); font: inherit; font-weight: 800; cursor: pointer; }
+  .loc[aria-pressed="true"] { background: #E3F0E7; border-color: #2F7A4B; color: #1F5A37; }
+  label { display: block; margin: 14px 0 4px; font-weight: 700; font-size: .95rem; }
+  input, select {
+    width: 100%; box-sizing: border-box; height: 46px; padding: 0 12px; border-radius: 12px;
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--bark); font: inherit;
+  }
+  .hint { margin: 6px 0 0; font-size: .85rem; color: var(--muted); }
+  .send { margin-top: 16px; }
+  .msg { margin: 10px 0 0; font-weight: 700; }
+  .msg.err { color: var(--clay); }
+  .app { margin: 18px 0 0; padding: 14px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); font-size: .95rem; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main class="lost">
+  <p class="brand">◎ CulDeChat</p>
+  <h1 class="title" id="title">Loading…</h1>
+  <img class="photo hidden" id="photo" alt="">
+  <p class="details hidden" id="details"></p>
+  <p class="seen hidden" id="seen"></p>
+  <p class="extra hidden" id="extra"></p>
+  <p class="found hidden" id="found"></p>
+
+  <section class="hidden" id="saw">
+    <button class="big" id="open" type="button" style="margin-top:16px">👁 I saw this pet</button>
+    <p class="hint" style="text-align:center">No account needed. The family hears right away.</p>
+    <div class="card hidden" id="form">
+      <h2 id="formTitle">Where did you see them?</h2>
+      <button class="loc" id="loc" type="button" aria-pressed="false">📍 Use where I am now</button>
+      <p class="hint" id="locHint">Only the spot goes to the family, nothing about you.</p>
+      <label for="where">Or say where</label>
+      <input id="where" maxlength="160" placeholder="Corner of Logwood Ct, by the pool…">
+      <label for="when">When?</label>
+      <select id="when">
+        <option value="0">Just now</option>
+        <option value="15">About 15 min ago</option>
+        <option value="30">About 30 min ago</option>
+        <option value="60">About an hour ago</option>
+        <option value="120">A couple of hours ago</option>
+      </select>
+      <button class="send" id="send" type="button">Send to the family</button>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="app"><b>Live nearby?</b> CulDeChat tells neighbors about lost pets, outages and more on their street.
+    Nobody's address is ever shown. <a href="/get.html">Get the free app ›</a></div>
+</main>
+
+<p class="links"><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/support.html">Support</a></p>
+<footer>
+  <p>© 2026 Direct Innovations LLC · <a href="mailto:support@culdechat.app">support@culdechat.app</a></p>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  // Lost pet poster (Nov 24). The link looks like culdechat.app/lost/#520fce6410eb.
+  // The page shows only what the owner put on the poster: never an address.
+  var API = 'https://lrzbxkskbpqajianurir.supabase.co/rest/v1/rpc/';
+  var KEY = 'sb_publishable_wZlm-qctT77iDOoeQ9ABEQ_ec3RqslJ';
+  var PHOTOS = 'https://lrzbxkskbpqajianurir.supabase.co/storage/v1/object/public/pet-posters/';
+  var $ = function (id) { return document.getElementById(id); };
+  var token = (location.hash || '').replace(/^#/, '').toLowerCase().replace(/[^a-f0-9]/g, '');
+  var spot = null, name = '';
+
+  function call(fn, args) {
+    return fetch(API + fn, {
+      method: 'POST',
+      headers: { 'apikey': KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(args)
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error((j && j.message) || 'Something went wrong. Try again.');
+        return j;
+      });
+    });
+  }
+
+  function ago(at) {
+    var m = Math.max(0, Math.round((Date.now() - new Date(at).getTime()) / 60000));
+    if (m < 2) return 'just now';
+    if (m < 60) return m + ' min ago';
+    var h = Math.round(m / 60);
+    if (h < 24) return h + (h === 1 ? ' hour ago' : ' hours ago');
+    return new Date(at).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  function show(v) {
+    name = (v.pet_name || '').trim();
+    var kind = (v.headline || 'LOST PET').replace('LOST ', '').toLowerCase();
+    var title = 'Lost ' + kind + (name ? ': ' + name : '');
+    document.title = title + ' · CulDeChat';
+    $('title').textContent = v.found ? (name || 'This ' + kind) + ' is home 🎉' : title;
+    if (v.photo) {
+      $('photo').src = PHOTOS + token + '.jpg?v=' + v.version;
+      $('photo').alt = 'Photo of ' + (name || 'the lost ' + kind);
+      $('photo').classList.remove('hidden');
+    }
+    if (v.details) { $('details').textContent = v.details; $('details').classList.remove('hidden'); }
+    if (v.found) {
+      $('found').textContent = 'Found! Thanks to everyone who looked. 💛';
+      $('found').classList.remove('hidden');
+      return;
+    }
+    $('seen').textContent = 'Still missing · last seen ' + (v.last_label ? v.last_label + ', ' : '') + ago(v.last_seen);
+    $('seen').classList.remove('hidden');
+    var extra = [];
+    if (v.reward) extra.push('Reward offered');
+    if (v.phone) extra.push('Call or text ' + v.phone);
+    if (extra.length) { $('extra').textContent = extra.join(' · '); $('extra').classList.remove('hidden'); }
+    $('open').textContent = '👁 I saw ' + (name || 'this ' + kind);
+    $('formTitle').textContent = 'Where did you see ' + (name || 'them') + '?';
+    $('saw').classList.remove('hidden');
+  }
+
+  $('open').addEventListener('click', function () {
+    $('form').classList.remove('hidden');
+    $('open').classList.add('hidden');
+  });
+
+  $('loc').addEventListener('click', function () {
+    if (!navigator.geolocation) { $('locHint').textContent = 'Your browser can’t share a location. Say where instead.'; return; }
+    $('locHint').textContent = 'Finding you…';
+    navigator.geolocation.getCurrentPosition(function (p) {
+      spot = { lat: p.coords.latitude, lng: p.coords.longitude };
+      $('loc').setAttribute('aria-pressed', 'true');
+      $('loc').textContent = '✓ Location added';
+      $('locHint').textContent = 'Only the spot goes to the family, nothing about you.';
+    }, function () {
+      $('locHint').textContent = 'Couldn’t get your location. Say where instead.';
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+
+  $('send').addEventListener('click', function () {
+    var where = $('where').value.trim();
+    var msg = $('msg');
+    msg.className = 'msg';
+    if (!spot && !where) { msg.className = 'msg err'; msg.textContent = 'Add your location or say where.'; return; }
+    $('send').disabled = true;
+    msg.textContent = 'Sending…';
+    call('web_poster_sighting', {
+      p_token: token, p_lat: spot ? spot.lat : null, p_lng: spot ? spot.lng : null,
+      p_minutes_ago: parseInt($('when').value, 10), p_note: where
+    }).then(function () {
+      msg.textContent = 'Thank you! ' + (name || 'Their') + (name ? '’s' : '') + ' family just got your sighting. 🙏';
+      $('loc').disabled = true; $('where').disabled = true; $('when').disabled = true;
+    }).catch(function (e) {
+      msg.className = 'msg err'; msg.textContent = e.message; $('send').disabled = false;
+    });
+  });
+
+  if (!/^[a-f0-9]{8,32}$/.test(token)) {
+    $('title').textContent = 'This poster link isn’t complete.';
+    return;
+  }
+  call('web_pet_poster', { p_token: token }).then(show).catch(function (e) {
+    $('title').textContent = e.message;
+  });
+})();
+</script>
+</body>
+</html>
