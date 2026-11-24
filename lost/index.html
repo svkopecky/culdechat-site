@@ -104,7 +104,11 @@
       headers: { 'apikey': KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify(args)
     }).then(function (r) {
-      return r.json().then(function (j) {
+      // A sighting saves with an empty reply (204): only read JSON when
+      // there is some (Safari fails on an empty body, Nov 24).
+      return r.text().then(function (t) {
+        var j = null;
+        try { j = t ? JSON.parse(t) : null; } catch (e) { j = null; }
         if (!r.ok) throw new Error((j && j.message) || 'Something went wrong. Try again.');
         return j;
       });
