@@ -68,7 +68,8 @@
   var phone = android || /iPhone|iPad|iPod/i.test(ua) ||
               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   function show(id) { document.getElementById(id).classList.remove('hidden'); }
-  if (failed || !code || !/^[A-Za-z0-9._~-]{8,200}$/.test(code)) { show(phone ? 'expired' : 'computer'); return; }
+  if (failed) { show('expired'); return; }
+  if (!code || !/^[A-Za-z0-9._~-]{8,200}$/.test(code)) { show(phone ? 'expired' : 'computer'); return; }
   if (!phone) { show('computer'); return; }
   var app = 'culdechat://in?c=' + encodeURIComponent(code);
   var link = android
