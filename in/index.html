@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Sign in · CulDeChat</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .box { max-width: 440px; margin: 0 auto; padding: 40px 18px 24px; text-align: center; }
+  .logo { display: block; width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 16px; }
+  h1 { margin: 0 0 10px; font-size: 1.5rem; font-weight: 800; line-height: 1.25; }
+  p { margin: 0 0 12px; color: var(--muted); line-height: 1.55; }
+  .open {
+    display: block; margin: 20px 0 10px; padding: 15px; border-radius: 26px; text-decoration: none;
+    background: var(--pine); color: var(--wheat); font-weight: 800; font-size: 1.05rem;
+  }
+  .small { font-size: .92rem; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<!-- One-tap sign-in (CulDeChat plan 2.3b, Nov 27, 2026). The sign-in email's
+     button comes here with ?code=… from Supabase. On a phone this opens the
+     app (culdechat://in?c=…), which finishes signing in. The code only works
+     on the phone that asked for the email, so a forwarded email can't sign
+     anyone else in. On a computer nothing is signed in: the page says to
+     open the email on a phone. -->
+<main class="box">
+  <img class="logo" src="/icon.svg" alt="CulDeChat">
+
+  <section id="phone" class="hidden">
+    <h1>Opening CulDeChat…</h1>
+    <p>If the app didn't open, tap the button.</p>
+    <a class="open" id="open" href="#">Open CulDeChat</a>
+    <p class="small">Don't have the app yet? <a href="/get.html">Get CulDeChat</a></p>
+  </section>
+
+  <section id="computer" class="hidden">
+    <h1>Open this email on your phone</h1>
+    <p>CulDeChat lives in the app, so this link signs you in on a phone, not on this computer.
+       Open the same email on your phone and tap the button, or type the code from the email into the app.</p>
+    <p class="small">Don't have the app yet? <a href="/get.html">Get CulDeChat</a></p>
+  </section>
+
+  <section id="expired" class="hidden">
+    <h1>This sign-in link has expired</h1>
+    <p>Links work once and for one hour. Open CulDeChat and type the code from your newest email,
+       or ask for a new email.</p>
+    <p class="small">Don't have the app yet? <a href="/get.html">Get CulDeChat</a></p>
+  </section>
+</main>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  var code = q.get('code');
+  var failed = q.get('error') || h.get('error');
+  // Keep the code out of the address bar and history.
+  if (code || failed) history.replaceState(null, '', location.pathname);
+  var ua = navigator.userAgent || '';
+  var android = /Android/i.test(ua);
+  var phone = android || /iPhone|iPad|iPod/i.test(ua) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  function show(id) { document.getElementById(id).classList.remove('hidden'); }
+  if (failed || !code || !/^[A-Za-z0-9._~-]{8,200}$/.test(code)) { show(phone ? 'expired' : 'computer'); return; }
+  if (!phone) { show('computer'); return; }
+  var app = 'culdechat://in?c=' + encodeURIComponent(code);
+  var link = android
+    ? 'intent://in?c=' + encodeURIComponent(code) + '#Intent;scheme=culdechat;package=app.culdechat;end'
+    : app;
+  document.getElementById('open').href = link;
+  show('phone');
+  setTimeout(function () { location.href = link; }, 50);
+})();
+</script>
+</body>
+</html>
